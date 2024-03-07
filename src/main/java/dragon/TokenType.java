@@ -2,18 +2,20 @@ package dragon;
 
 /**
  * Types of tokens
+ * Grouped by hardness of recognition
  */
 public enum TokenType {
   // Group 0
-  EOF,
-  WS,
-  UNKNOWN,
+  EOF,  // end of file
+  UNKNOWN,  // for error
 
   // Group 1
   // lookhead = 1 (LA(1))
+  DOT, POS, NEG,
   IF, ELSE,
   ID,
   INT,
+  WS,
 
   // Group 2
   // =, <>, <, <=, >, >=
@@ -24,6 +26,4 @@ public enum TokenType {
   // arbitrary LA
   REAL,
   SCI,
-
-  DOT, POS, NEG,
 }

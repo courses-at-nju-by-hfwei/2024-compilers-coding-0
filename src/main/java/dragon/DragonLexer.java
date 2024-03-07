@@ -5,8 +5,8 @@ public class DragonLexer extends Lexer {
   private int lastMatchPos = 0;
 
   // the longest match: position (beyond one) and token type
-  int longestPrefixPos = 0;
-  TokenType longestPrefixTokenType = null;
+  int longestValidPrefixPos = 0;
+  TokenType longestValidPrefixType = null;
 
   private final KeywordTable kwTable = new KeywordTable();
 
@@ -16,7 +16,7 @@ public class DragonLexer extends Lexer {
 
   @Override
   public Token nextToken() {
-    if (peek == EOF) {
+    if (pos == input.length()) {
       return Token.EOF;
     }
 
@@ -70,79 +70,77 @@ public class DragonLexer extends Lexer {
   private Token NUMBER() {
     advance();
     int state = 13;
+
     while (true) {
       switch (state) {
         case 13:
-          longestPrefixPos = pos;
-          longestPrefixTokenType = TokenType.INT;
+          longestValidPrefixPos = pos;
+          longestValidPrefixType = TokenType.INT;
 
           if (Character.isDigit(peek)) {
             advance();
-            break;
           } else if (peek == '.') {
             advance();
             state = 14;
-            break;
-          } else if (peek == 'E') {
+          } else if (peek == 'E' || peek == 'e') {
             advance();
             state = 16;
-            break;
-          } else { // an INT
+          } else { // recognize an INT
+            // TODO
             return backToTheLongestMatch();
           }
+          break;
         case 14:
           if (Character.isDigit(peek)) {
             advance();
             state = 15;
-            break;
           } else {
             return backToTheLongestMatch();
           }
+          break;
         case 15:
-          // the longest match
-          longestPrefixPos = pos;
-          longestPrefixTokenType = TokenType.REAL;
+          longestValidPrefixPos = pos;
+          longestValidPrefixType = TokenType.REAL;
 
           if (Character.isDigit(peek)) {
             advance();
-            break;
-          } else if (peek == 'E') {
+          } else if (peek == 'E' || peek == 'e') {
             advance();
             state = 16;
-            break;
-          } else { // a REAL
+          } else { // recognize a REAL
+            // TODO
             return backToTheLongestMatch();
           }
+          break;
         case 16:
           if (peek == '+' || peek == '-') {
             advance();
             state = 17;
-            break;
           } else if (Character.isDigit(peek)) {
             advance();
             state = 18;
-            break;
           } else {
             return backToTheLongestMatch();
           }
+          break;
         case 17:
           if (Character.isDigit(peek)) {
             advance();
             state = 18;
-            break;
           } else {
             return backToTheLongestMatch();
           }
+          break;
         case 18:
-          longestPrefixPos = pos;
-          longestPrefixTokenType = TokenType.SCI;
+          longestValidPrefixPos = pos;
+          longestValidPrefixType = TokenType.SCI;
 
           if (Character.isDigit(peek)) {
             advance();
-            break;
-          } else { // an SCI
+          } else { // recognize an SCI
             return backToTheLongestMatch();
           }
+          break;
         default:
           System.err.println("Unreachable");
       }
@@ -150,9 +148,15 @@ public class DragonLexer extends Lexer {
   }
 
   private Token backToTheLongestMatch() {
-    this.reset(longestPrefixPos);
-    return new Token(longestPrefixTokenType,
-        this.input.substring(this.lastMatchPos, this.pos));
+    Token token = new Token(longestValidPrefixType,
+        input.substring(lastMatchPos, longestValidPrefixPos));
+    System.out.println(lastMatchPos + ":" + (longestValidPrefixPos - 1));
+
+    if (longestValidPrefixPos < input.length()) {
+      this.reset(longestValidPrefixPos);
+    }
+
+    return token;
   }
 
   private Token WS() {

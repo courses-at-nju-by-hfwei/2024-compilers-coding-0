@@ -1,26 +1,24 @@
 package dragon;
 
 public abstract class Lexer {
-  public static final char EOF = (char) -1;
-
   final String input;
   char peek;
   int pos;
 
   public Lexer(String input) {
     this.input = input;
-    this.pos = 0;
+    this.pos = 0;  // the next position to be scanned
     this.peek = input.charAt(pos);
   }
 
   public abstract Token nextToken();
 
   public void advance() {
-    this.pos++;
-    if (this.pos >= this.input.length()) {
-      this.peek = EOF;
+    pos++;
+    if (pos >= input.length()) {
+      peek = Character.MIN_VALUE;
     } else {
-      this.peek = input.charAt(this.pos);
+      peek = input.charAt(pos);
     }
   }
 
