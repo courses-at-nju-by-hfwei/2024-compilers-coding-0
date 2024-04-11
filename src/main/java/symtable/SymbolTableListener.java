@@ -16,24 +16,12 @@ public class SymbolTableListener extends CymbolBaseListener {
   }
 
   @Override
-  public void exitProg(CymbolParser.ProgContext ctx) {
-    graph.addNode(SymbolTableTreeGraph.toDot(currentScope));
-  }
+  public void enterBlock(CymbolParser.BlockContext ctx) {
+    LocalScope localScope = new LocalScope(currentScope);
 
-  @Override
-  public void exitVarDecl(CymbolParser.VarDeclContext ctx) {
-    String typeName = ctx.type().getText();
-    Type type = (Type) globalScope.resolve(typeName);
+    graph.addEdge(localScope.getName(), currentScope.getName());
 
-    String varName = ctx.ID().getText();
-    VariableSymbol varSymbol = new VariableSymbol(varName, type);
-    currentScope.define(varSymbol);
-  }
-
-  @Override
-  public void exitId(CymbolParser.IdContext ctx) {
-    String varName = ctx.ID().getText();
-    currentScope.resolve(varName);
+    currentScope = localScope;
   }
 
   @Override
@@ -50,10 +38,17 @@ public class SymbolTableListener extends CymbolBaseListener {
     currentScope = func;
   }
 
+  /**
+   * define symbols
+   */
   @Override
-  public void exitFunctionDecl(CymbolParser.FunctionDeclContext ctx) {
-    graph.addNode(SymbolTableTreeGraph.toDot(currentScope));
-    currentScope = currentScope.getEnclosingScope();
+  public void exitVarDecl(CymbolParser.VarDeclContext ctx) {
+    String typeName = ctx.type().getText();
+    Type type = (Type) globalScope.resolve(typeName);
+
+    String varName = ctx.ID().getText();
+    VariableSymbol varSymbol = new VariableSymbol(varName, type);
+    currentScope.define(varSymbol);
   }
 
   @Override
@@ -67,17 +62,34 @@ public class SymbolTableListener extends CymbolBaseListener {
     currentScope.define(varSymbol);
   }
 
+  /**
+   * use symbols
+   */
   @Override
-  public void enterBlock(CymbolParser.BlockContext ctx) {
-    LocalScope localScope = new LocalScope(currentScope);
+  public void exitId(CymbolParser.IdContext ctx) {
+    String varName = ctx.ID().getText();
+    currentScope.resolve(varName);
+  }
 
-    graph.addEdge(localScope.getName(), currentScope.getName());
-
-    currentScope = localScope;
+  /**
+   * Exit the current scope and return to its enclosing scope
+   */
+  @Override
+  public void exitProg(CymbolParser.ProgContext ctx) {
+    exitCurrentScope();
   }
 
   @Override
   public void exitBlock(CymbolParser.BlockContext ctx) {
+    exitCurrentScope();
+  }
+
+  @Override
+  public void exitFunctionDecl(CymbolParser.FunctionDeclContext ctx) {
+    exitCurrentScope();
+  }
+
+  private void exitCurrentScope() {
     graph.addNode(SymbolTableTreeGraph.toDot(currentScope));
     currentScope = currentScope.getEnclosingScope();
   }
