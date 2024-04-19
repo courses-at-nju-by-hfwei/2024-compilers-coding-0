@@ -37,14 +37,15 @@ arrayType[String basic_type]
   ;
 
 expr returns [String type]
-    : ID { String expr_type = typeMap.get($ID.text); }
+    locals [String expr_type = null; ]
+    : ID { $expr_type = typeMap.get($ID.text); }
       ('[' INT ']'
          {
-           int start = expr_type.indexOf(',');
-           int end = expr_type.lastIndexOf(')');
-           expr_type = expr_type.substring(start + 1, end);
+           int start = $expr_type.indexOf(',');
+           int end = $expr_type.lastIndexOf(')');
+           $expr_type = $expr_type.substring(start + 1, end);
          }
-      )* { $type = expr_type; }
+      )* { $type = $expr_type; }
     | ID { $type = typeMap.get($ID.text); }
     | INT { $type = "int"; }
     ;

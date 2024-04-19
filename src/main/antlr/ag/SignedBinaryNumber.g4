@@ -8,7 +8,8 @@ number : sign list ;
 
 sign : '+' | '-' ;
 
-list : list bit
+// using right recursion instead of left recursion
+list : bit list
      | bit
      ;
 

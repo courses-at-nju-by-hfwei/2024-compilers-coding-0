@@ -16,8 +16,15 @@ sign returns [boolean neg]
   | '-' { $neg = true; }
   ;
 
+// left recursion
 //list[int pos] returns [int val]
 //  : left = list[$pos + 1] bit[$pos] { $val =  $left.val + $bit.val; }
+//  | bit[int pos] { $val = $bit.val; }
+//  ;
+
+// right recursion
+//list[int pos] returns [int val]
+//  : bit[$pos] left = list[$pos + 1] { $val =  $left.val + $bit.val; }
 //  | bit[int pos] { $val = $bit.val; }
 //  ;
 
