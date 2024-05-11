@@ -27,7 +27,9 @@ b.false9:
 t7 = 2
 a = t7
 br b.false6
-br begin4
-b.false6:
 t8 = 3
 a = t8
+br begin4
+b.false6:
+t9 = 4
+a = t9

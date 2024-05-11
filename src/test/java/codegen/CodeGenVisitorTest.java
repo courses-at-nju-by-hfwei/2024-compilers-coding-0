@@ -14,16 +14,24 @@ import java.nio.file.Path;
 
 public class CodeGenVisitorTest {
   private InputStream is = System.in;
-  private final String PATH = "src/test/antlr/codegen/control-flow-I/";
+  private final String PATH = "src/test/antlr/codegen/control-flow-I/in-class/";
+//  private final String PATH = "src/test/antlr/codegen/control-flow-I/final/";
   private String srcFile;
-  private String codeFile;
+  private String[] srcFiles;
+  private String irFile;
 
-  @BeforeMethod
-  public void setUp() throws IOException {
-    // bool.txt, if.txt, while.txt, break.txt, bool-short-circuit.txt
+  @Test
+  public void testSuit() throws IOException {
+    srcFiles = new String[] { "bool",
+      "if", "while", "break", "bool-short-circuit" };
     // while-if-II.txt, bool-short-circuit-II.txt
-    srcFile = "while-if-II";
-    is = new FileInputStream(Path.of(PATH + srcFile + ".txt").toFile());
+
+    for (String srcFile : srcFiles) {
+      is = new FileInputStream(Path.of(PATH + srcFile + ".txt").toFile());
+      irFile = srcFile + "-ir";
+
+      testCodeGenVisitor();
+    }
   }
 
   @Test
@@ -35,8 +43,7 @@ public class CodeGenVisitorTest {
     ControlParser parser = new ControlParser(tokens);
     ParseTree tree = parser.prog();
 
-    codeFile = srcFile + "-code";
-    CodeGenVisitor cg = new CodeGenVisitor(PATH + codeFile + ".txt");
+    CodeGenVisitor cg = new CodeGenVisitor(PATH + irFile + ".txt");
     cg.visit(tree);
   }
 }

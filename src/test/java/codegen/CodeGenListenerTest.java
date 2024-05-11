@@ -22,8 +22,8 @@ public class CodeGenListenerTest {
 
   @BeforeMethod
   public void setUp() throws IOException {
-    // bool.txt, if.txt, while.txt, bool-short-circuit.txt
-    // while-if-II.txt, bool-short-circuit-II.txt
+    // bool-final.txt, if-final.txt, while-final.txt, bool-short-circuit-final.txt
+    // while-if-final-II.txt, bool-short-circuit-II-final.txt
     srcFile = "bool-short-circuit-II";
     is = new FileInputStream(Path.of(PATH + srcFile + ".txt").toFile());
   }
