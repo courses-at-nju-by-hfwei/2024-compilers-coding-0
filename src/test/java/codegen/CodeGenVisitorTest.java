@@ -14,16 +14,18 @@ import java.nio.file.Path;
 
 public class CodeGenVisitorTest {
   private InputStream is = System.in;
-  private final String PATH = "src/test/antlr/codegen/control-flow-I/in-class/";
-//  private final String PATH = "src/test/antlr/codegen/control-flow-I/final/";
-  private String srcFile;
-  private String[] srcFiles;
+//  private final String PATH = "src/test/antlr/codegen/control-flow-I/in-class/";
+  private final String PATH = "src/test/antlr/codegen/control-flow-I/final/";
   private String irFile;
 
   @Test
   public void testSuit() throws IOException {
-    srcFiles = new String[] { "bool",
-      "if", "while", "break", "bool-short-circuit" };
+    String[] srcFiles = new String[]{
+        "bool",
+        "if", "while",
+        "break",
+        "bool-short-circuit"
+    };
     // while-if-II.txt, bool-short-circuit-II.txt
 
     for (String srcFile : srcFiles) {
